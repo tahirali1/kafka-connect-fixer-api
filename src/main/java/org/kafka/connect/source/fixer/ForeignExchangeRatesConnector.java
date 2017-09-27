@@ -1,6 +1,5 @@
 package org.kafka.connect.source.fixer;
 
-
 import com.google.common.base.Strings;
 import org.apache.kafka.common.config.Config;
 import org.apache.kafka.common.config.ConfigDef;
@@ -28,7 +27,13 @@ public class ForeignExchangeRatesConnector extends SourceConnector {
                                     .Type
                                     .STRING,
                             ConfigDef.Importance.LOW,
-                            "The topic to publish data to");
+                            "The topic to publish data to")
+                    .define("url",
+                            ConfigDef
+                                    .Type
+                                    .STRING,
+                            ConfigDef.Importance.LOW,
+                            "The API endpoint to connect with");
 
     private static final String API_ENDPOINT = "url";
     private static final String TOPIC_NAME = "topic";
@@ -73,13 +78,11 @@ public class ForeignExchangeRatesConnector extends SourceConnector {
 
     @Override
     public List<Map<String, String>> taskConfigs(final int maxTask) {
-        ArrayList<Map<String, String>> configs = new ArrayList<>();
-
+        final ArrayList<Map<String, String>> configs = new ArrayList<>();
         Map<String, String> config = new HashMap<>();
         config.put(API_ENDPOINT,url);
         config.put(TOPIC_NAME, topicName);
         configs.add(config);
-
         return configs;
     }
 
@@ -94,9 +97,8 @@ public class ForeignExchangeRatesConnector extends SourceConnector {
     }
 
     @Override
-    public Config validate(Map<String, String> connectorConfigs) {
-        ConfigDef configDef = config();
-        System.out.println("validating config");
+    public Config validate(final Map<String, String> connectorConfigs) {
+        final ConfigDef configDef = config();
         List<ConfigValue> configValues = configDef.validate(connectorConfigs);
         return new Config(configValues);
     }

@@ -5,7 +5,6 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 /**
  * A class implementing the functionality for connecting with fixer.io API
@@ -19,8 +18,6 @@ public class FixerClient {
 
     /**
      * invoke the Fixer api.
-     *
-     * @throws IOException on SendAttemptInformation serialization problem
      * @throws ProcessingException generic failure in processing the request
      */
     public String executeRequest() throws ProcessingException {
@@ -30,6 +27,9 @@ public class FixerClient {
                 .queryParam("base","USD")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
-        return response.readEntity(String.class);
+        if(response.getStatus() == Response.Status.OK.getStatusCode()) {
+            return response.readEntity(String.class);
+        }
+        return String.valueOf(response.getStatus());
     }
 }

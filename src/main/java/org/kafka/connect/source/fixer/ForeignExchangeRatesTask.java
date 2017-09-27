@@ -45,10 +45,9 @@ public class ForeignExchangeRatesTask extends SourceTask {
      * with the client thread.
      */
     @Override
-    public void start(Map<String, String> map) {
+    public void start(final Map<String, String> map) {
         topic = map.get(TOPIC_NAME);
         url = map.get(API_ENDPOINT);
-        latestDate = getStoredDate();
         final WebTarget webTarget = createClient(url);
         fixerClient = new FixerClient(webTarget);
     }
@@ -70,29 +69,6 @@ public class ForeignExchangeRatesTask extends SourceTask {
 
     @Override
     public void stop() {}
-
-    private String getStoredDate() {
-        Map<String, Object> offset = context
-                .offsetStorageReader()
-                .offset(
-                        Collections
-                                .singletonMap(
-                                        SERVICE_FIELD,
-                                        "fixer")
-                );
-        if( offset == null) {
-            System.out.println(offset.toString());
-            return null;
-        }else {
-            System.out.println(offset.toString());
-            Object off = offset.get(POSITION_FIELD);
-            if(off == null || !(off instanceof String)){
-                return null;
-            }else{
-                return (String) off;
-            }
-        }
-    }
 
     private Map<String, String> offsetKey(String service) {
         return Collections.singletonMap(SERVICE_FIELD, service);
